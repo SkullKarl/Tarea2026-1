@@ -1,0 +1,16 @@
+9
+Horizontal1 0 100 500 100 X
+Horizontal2 0 200 500 200 X
+Horizontal3 0 300 500 300 X
+Horizontal4 0 400 500 400 X
+Vertical1 100 0 100 500 Y
+Vertical2 200 0 200 500 Y
+Vertical3 300 0 300 500 Y
+Vertical4 400 0 400 500 Y
+Diagonal 0 0 500 500 X
+5
+Rio Horizontal4 25
+Iglesia Diagonal 300
+Plaza Vertical3 0
+Museo Horizontal2 300
+Parque Vertical4 430
