@@ -174,44 +174,30 @@ int **CargarGrafo(const char *filename, int *nVerticesOut) {
         fclose(file);
         return NULL;
     }
-
     if (nCalles > MAX_CALLES) {
         fprintf(stderr, "Demasiadas calles.\n");
         fclose(file);
         return NULL;
     }
-
     /*Leer calles*/
     for (int i = 0; i < nCalles; i++) {
-        if (fscanf(file, "%99s %lf %lf %lf %lf %c",
-                   calles[i].nombre,
-                   &calles[i].x1,
-                   &calles[i].y1,
-                   &calles[i].x2,
-                   &calles[i].y2,
-                   &calles[i].eje) != 6) {
+        if (fscanf(file, "%99s %lf %lf %lf %lf %c", calles[i].nombre, &calles[i].x1, &calles[i].y1, &calles[i].x2, &calles[i].y2, &calles[i].eje) != 6) {
             fclose(file);
             return NULL;
         }
     }
-
-    /*Leer puntos de interes*/
+    /*Leer puntos de interés*/
     if (fscanf(file, "%d", &nPuntos) != 1) {
         fclose(file);
         return NULL;
     }
-
     if (nPuntos > MAX_PUNTOS) {
         fprintf(stderr, "Demasiados puntos turísticos.\n");
         fclose(file);
         return NULL;
     }
-
     for (int i = 0; i < nPuntos; i++) {
-        if (fscanf(file, "%99s %99s %lf",
-                   puntos[i].nombre,
-                   puntos[i].calle,
-                   &puntos[i].posicion) != 3) {
+        if (fscanf(file, "%99s %99s %lf", puntos[i].nombre, puntos[i].calle, &puntos[i].posicion) != 3) {
             fclose(file);
             return NULL;
         }
@@ -221,105 +207,76 @@ int **CargarGrafo(const char *filename, int *nVerticesOut) {
 
     /*Agregar extremos de cada calle como vértices*/
     for (int i = 0; i < nCalles; i++) {
-        AgregarVertice(vertices, &nVertices,
-                       "Extremo",
-                       calles[i].x1, calles[i].y1,
-                       0);
-
-        AgregarVertice(vertices, &nVertices,
-                       "Extremo",
-                       calles[i].x2, calles[i].y2,
-                       0);
+        AgregarVertice(vertices, &nVertices, "Extremo", calles[i].x1, calles[i].y1, 0);
+        AgregarVertice(vertices, &nVertices, "Extremo", calles[i].x2, calles[i].y2, 0);
     }
-
     /*Agregar intersecciones*/
     for (int i = 0; i < nCalles; i++) {
         for (int j = i + 1; j < nCalles; j++) {
             double x, y;
 
             if (Intersectan(calles[i], calles[j], &x, &y)) {
-                AgregarVertice(vertices, &nVertices,
-                               "Interseccion",
-                               x, y,
-                               0);
+                AgregarVertice(vertices, &nVertices, "Interseccion", x, y, 0);
             }
         }
     }
-
-    /*Agregar puntos de interes*/
+    /*Agregar puntos de interés*/
     for (int i = 0; i < nPuntos; i++) {
         int idx = BuscarCalle(calles, nCalles, puntos[i].calle);
 
         if (idx >= 0) {
             double x, y;
-
-            InteresEnCalle(calles[idx],
-                              puntos[i].posicion,
-                              &x, &y);
-
-            AgregarVertice(vertices, &nVertices,
-                           puntos[i].nombre,
-                           x, y,
-                           1);
+            InteresEnCalle(calles[idx], puntos[i].posicion, &x, &y);
+            AgregarVertice(vertices, &nVertices, puntos[i].nombre, x, y, 1);
         }
     }
 
     /*Crear matriz de adyacencia*/
     int **graph = malloc(nVertices * sizeof(int *));
+
     if (!graph)
         return NULL;
-
     for (int i = 0; i < nVertices; i++) {
         graph[i] = calloc(nVertices, sizeof(int));
 
         if (!graph[i]) {
             for (int k = 0; k < i; k++)
                 free(graph[k]);
+
             free(graph);
             return NULL;
         }
     }
-
     /*Conectar vértices consecutivos en cada calle*/
     for (int c = 0; c < nCalles; c++) {
         ListaVerticesCalle lista;
         lista.cantidad = 0;
 
         for (int v = 0; v < nVertices; v++) {
-            double t = PuntoEnCalle(calles[c],
-                                        vertices[v].x,
-                                        vertices[v].y);
-
+            double t = PuntoEnCalle(calles[c], vertices[v].x, vertices[v].y);
             double xTest, yTest;
             InteresEnCalle(calles[c], t, &xTest, &yTest);
 
-            if (MismoPunto(xTest, yTest,
-                           vertices[v].x,
-                           vertices[v].y)) {
+            if (MismoPunto(xTest, yTest, vertices[v].x, vertices[v].y)) {
                 lista.indices[lista.cantidad] = v;
                 lista.posiciones[lista.cantidad] = t;
                 lista.cantidad++;
             }
         }
-
         if (lista.cantidad < 2)
             continue;
 
         OrdenarLista(&lista);
-
         int natural = Direccion(calles[c], c);
 
         if (natural) {
             for (int i = 0; i < lista.cantidad - 1; i++) {
-                AgregarArista(graph,
-                              lista.indices[i],
-                              lista.indices[i + 1]);
+                AgregarArista(graph, lista.indices[i], lista.indices[i + 1]);
             }
-        } else {
+        }
+        else {
             for (int i = lista.cantidad - 1; i > 0; i--) {
-                AgregarArista(graph,
-                              lista.indices[i],
-                              lista.indices[i - 1]);
+                AgregarArista(graph, lista.indices[i], lista.indices[i - 1]);
             }
         }
     }
