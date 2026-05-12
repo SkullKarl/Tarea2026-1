@@ -9,7 +9,7 @@ Vertical3 300 0 300 500 Y
 Vertical4 400 0 400 500 Y
 Diagonal 0 0 500 500 X
 5
-Rio Horizontal4 25
+Río Horizontal4 25
 Iglesia Diagonal 300
 Plaza Vertical3 0
 Museo Horizontal2 300

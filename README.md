@@ -1,7 +1,7 @@
 # Tarea2026-1
 
 Para compilar:
-gcc main.c archivos.c -o programa -lm
+gcc src/main.c src/archivos.c src/bfs.c -o programa -lm
 
 Para ejecutar:
 ./programa
