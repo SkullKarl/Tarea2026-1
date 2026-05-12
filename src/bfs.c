@@ -193,13 +193,33 @@ int CalcularRutaTuristica(int **grafo, int nVertices) {
     int verticeActual = ObtenerVerticePuntoTuristico(puntoActual);
     int visitados = 1;
 
-    if (verticeActual < 0) {
-        printf("No se pudo ubicar el primer punto turistico en el grafo.\n");
+    /*
+     * rutaCompleta acumula todos los vértices recorridos por los distintos
+     * tramos BFS. Al final se usa para dibujar la ruta en el SVG.
+     */
+    int capacidadRuta = nVertices * nPuntos;
+    int *rutaCompleta = malloc(capacidadRuta * sizeof(int));
+    int largoRutaCompleta = 0;
+
+    if (rutaCompleta == NULL) {
+        printf("Error de memoria al guardar la ruta completa.\n");
         free(visitado);
         free(padre);
         free(camino);
         return 0;
     }
+
+    if (verticeActual < 0) {
+        printf("No se pudo ubicar el primer punto turistico en el grafo.\n");
+        free(visitado);
+        free(padre);
+        free(camino);
+        free(rutaCompleta);
+        return 0;
+    }
+
+    rutaCompleta[largoRutaCompleta] = verticeActual;
+    largoRutaCompleta++;
 
     visitado[puntoActual] = 1;
 
@@ -227,6 +247,7 @@ int CalcularRutaTuristica(int **grafo, int nVertices) {
             free(visitado);
             free(padre);
             free(camino);
+            free(rutaCompleta);
             return 0;
         }
 
@@ -241,6 +262,7 @@ int CalcularRutaTuristica(int **grafo, int nVertices) {
             free(visitado);
             free(padre);
             free(camino);
+            free(rutaCompleta);
             return 0;
         }
 
@@ -251,10 +273,22 @@ int CalcularRutaTuristica(int **grafo, int nVertices) {
             free(visitado);
             free(padre);
             free(camino);
+            free(rutaCompleta);
             return 0;
         }
 
         ImprimirCaminoTuristico(camino, largo);
+
+        /*
+         * Concatenar este tramo a la ruta completa. Se omite el primer
+         * vértice del tramo para no repetir el vértice donde empieza.
+         */
+        for (int i = 1; i < largo; i++) {
+            if (largoRutaCompleta < capacidadRuta) {
+                rutaCompleta[largoRutaCompleta] = camino[i];
+                largoRutaCompleta++;
+            }
+        }
 
         for (int i = 0; i < largo; i++) {
             int indicePunto = ObtenerIndicePuntoPorVertice(camino[i]);
@@ -282,9 +316,14 @@ int CalcularRutaTuristica(int **grafo, int nVertices) {
 
     printf("\nTodos los puntos turisticos fueron visitados.\n");
 
+    if (largoRutaCompleta > 1) {
+        GenerarVisualizacionRuta(rutaCompleta, largoRutaCompleta);
+    }
+
     free(visitado);
     free(padre);
     free(camino);
+    free(rutaCompleta);
 
     return 1;
 }

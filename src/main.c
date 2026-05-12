@@ -61,7 +61,7 @@ int main(void) {
             if (scanf("%19s", respuesta) != 1) {
                 while (getchar() != '\n');
 
-                printf("Entrada inválida\n");
+                printf("Entrada invalida\n");
                 continue;
             }
 
@@ -80,7 +80,7 @@ int main(void) {
                 break;
             }
 
-            printf("Respuesta inválida. Use 'Sí' o 'No'.\n");
+            printf("Respuesta inválida. Use 'Si' o 'No'.\n");
         }
     }
 
