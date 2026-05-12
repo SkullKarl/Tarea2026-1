@@ -47,48 +47,8 @@ int main(void) {
         printf("\nGrafo cargado correctamente.\n");
         printf("Cantidad de vertices: %d\n", n);
 
-
-
-
-
-
-
-
-
-
-        /*Prueba temporal de BFS*/
-        if (n >= 2) {
-            int *padre = malloc(n * sizeof(int));
-
-            if (padre == NULL) {
-                printf("Error de memoria.\n");
-                LiberarGrafo(grafo, n);
-                return 1;
-            }
-
-            
-            int origen = 0;   // vertice 0 del grafo
-            int destino = 3;  // vertice 3 del grafo, aqui estuve cambiando y viendo el resultado
-
-
-            printf("\nProbando BFS desde %d hasta %d...\n", origen, destino);
-
-            if (BFS(grafo, n, origen, destino, padre)) {
-                ImprimirCamino(padre, origen, destino);
-            } else {
-                printf("No existe camino desde %d hasta %d.\n", origen, destino);
-            }
-
-            free(padre);
-        } else {
-            printf("No hay suficientes vertices para probar BFS.\n");
-        }
-
-
-
-
-
-
+        /*Calcular ruta turística usando BFS*/
+        CalcularRutaTuristica(grafo, n);
 
 
         /*Liberar memoria*/
